@@ -1,0 +1,196 @@
+<html>
+    <head>
+    <title>MovieFinder</title>
+    <link rel="stylesheet" href="project.css">
+    </head>
+    <body>
+    <h1>MovieFinder</h1>
+        <nav>
+            <a href="home.html">Home</a>
+            <a href="about.html">About</a>
+            <a href="help.html">Help</a>
+        </nav>
+    
+    <input
+    type="text"
+    id="searchInput"
+    placeholder="Search for a movie...">
+    <button onclick="searchMovies()">Search</button>
+
+<select id="genreSelect" onchange="filterByGenre()">
+    <option value="">All Genres</option>
+</select>
+
+<h2>
+    Searched Movie: "<span id="searchText"></span>"
+</h2>
+
+
+<div class="slider-wrapper">
+
+  <button class="slider-btn left" id="slideLeft">
+    &#10094;
+  </button>
+
+  <div id="moviesContainer" class="movies-slider"></div>
+
+  <button class="slider-btn right" id="slideRight">
+    &#10095;
+  </button>
+
+</div>
+
+
+
+<!--Need to put the js for each page on their own or code doesn't work-->
+<script>
+//API Key 
+const API_KEY = "3131c90536b9cb0859d9dfab72375f3a";
+
+//Load Movies and Genres dropdown when page loads 
+window.onload = function () {
+  getGenres();
+  getNewMovies();
+
+};
+
+//Fetch Newly Released Movies (Thought these would be best on the home page)
+async function getNewMovies() {
+    const response = await fetch(
+      `https://api.themoviedb.org/3/movie/now_playing?api_key=${API_KEY}`
+    );
+
+    const data = await response.json();
+
+    displayMovies(data.results);
+
+}
+//Search Movies via input 
+async function searchMovies() {
+
+  const search =
+    document.getElementById("searchInput").value;
+
+    //Fetch movies User's what based on their search input 
+  document.getElementById("searchText").textContent = query;
+    const response = await fetch(
+      `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${search}`
+    );
+
+    const data = await response.json();
+
+    displayMovies(data.results);
+}
+
+//Display Movies
+function displayMovies(movies) {
+
+  const moviesContainer =
+    document.getElementById("moviesContainer");
+
+  moviesContainer.innerHTML = "";
+
+  movies.forEach(movie => {
+
+    const posterPath = movie.poster_path
+      ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+      : "https://via.placeholder.com/500x750?text=No+Image";
+
+    const movieCard =
+      document.createElement("div");
+
+    movieCard.classList.add("movie-card");
+
+    movieCard.innerHTML = `
+
+      <img
+        src="${posterPath}"
+        alt="${movie.title}"
+      >
+
+      <div class="movie-info">
+
+        <h3>${movie.title}</h3>
+
+        <p>Rating:${movie.vote_average.toFixed(1)}</p>
+
+        <p>${movie.release_date || "Unknown Date"}</p>
+
+      </div>
+
+    `;
+
+    //Clickable Movie Poster
+    movieCard.addEventListener("click", () => {
+      window.location.href =
+        `movie.html?id=${movie.id}`;
+
+    });
+
+    moviesContainer.appendChild(movieCard);
+  });
+}
+
+//Fetch Genres for Genre Dropdown 
+async function getGenres() {
+  const response = await fetch(
+    `https://api.themoviedb.org/3/genre/movie/list?api_key=${API_KEY}`
+  );
+
+  const data = await response.json();
+
+  const select = document.getElementById("genreSelect");
+
+  data.genres.forEach(genre => {
+    const option = document.createElement("option");
+    option.value = genre.id;
+    option.textContent = genre.name;
+    select.appendChild(option);
+  });
+}
+
+//Filter the movies by user selected genre
+async function filterByGenre() {
+
+    const genreId =
+        document.getElementById("genreSelect").value;
+
+    let url = "";
+
+    if (genreId === "") {
+        url = `https://api.themoviedb.org/3/movie/now_playing?api_key=${API_KEY}`;
+    } 
+    
+    else {
+        url = `https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&with_genres=${genreId}`;
+    }
+
+      const response = await fetch(url);
+
+      const data = await response.json();
+
+      displayMovies(data.results);
+    }
+
+//Picture Slider for Movies (Gives the app more of a netflix feel)
+const slideLeft =
+  document.getElementById("slideLeft");
+
+const slideRight =
+  document.getElementById("slideRight");
+
+const moviesContainer =
+  document.getElementById("moviesContainer");
+
+slideLeft.addEventListener("click", () => {
+  moviesContainer.scrollBy({
+    left: -500,
+  });
+});
+
+slideRight.addEventListener("click", () => {
+  moviesContainer.scrollBy({
+    left: 500,
+  });
+});
+</script>
