@@ -16,10 +16,11 @@ movie-finder/
 │   |- README.md
 │
 | - public/
-│   |- home.html
-│   |- movie.html
-│   |- help.html
+│   |- home.html / home.js
+│   |- movie.html / movie.js
+│   |- help.html 
 |   |- about.html
+|   |- project.css
 │
 
 ---
@@ -42,9 +43,7 @@ npm install
 Dependencies used:
 - express
 - cors
-- dotenv
 - @supabase/supabase-js
-- node-fetch
 
 ---
 
