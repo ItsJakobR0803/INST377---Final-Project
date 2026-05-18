@@ -37,8 +37,6 @@ Currently, no automated tests have been implemented.
 ## Endpoints
 GET /
 Serves the main homepage.
-
-Response
 Returns: public/home.html
 
 GET /api/movies
@@ -53,8 +51,6 @@ q	Movie search keyword
 
 Example Request
 GET /api/search?q=batman
-Response
-
 Returns 'Batman' movies from TMDb.
 
 GET /api/genres
@@ -81,8 +77,6 @@ id	TMDb movie ID
 
 Example Request
 GET /api/details/550
-Response
-
 Returns:
 Movie details
 Cast and crew credits
@@ -93,8 +87,6 @@ Retrieves all favorite movies stored in Supabase.
 
 Example Request
 GET /favorites
-Response
-
 Returns all favorite movie entries.
 
 POST /favorite
@@ -109,8 +101,6 @@ Request Body
   "overview": "Movie description",
   "poster_path": "/path.jpg"
 }
-Response
-
 Returns inserted database entry.
 
 # Known Bugs
