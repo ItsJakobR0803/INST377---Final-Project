@@ -86,16 +86,6 @@ app.get('/favorites', async (req, res) => {
     console.log('Attempting to get all favorite movies');
 
     const { data, error } = await supabase.from('favorites').select();
-
-
-    if (error) {
-        console.log(`Error: ${error}`);
-        res.statusCode = 500;
-        res.send(error);
-    } else {
-        res.json(data)
-    }
-    console.log('Recieved Data:', data)
 });
 
 
@@ -123,13 +113,6 @@ app.post('/favorite', async(req, res) =>{
             }
         ])
         .select();
-
-    if (error) {
-        console.log('Supabase Error:', error);
-        return res.status(500).json(error);
-    }
-
-    console.log('Inserted:', data);
 
     res.json(data);
 });
