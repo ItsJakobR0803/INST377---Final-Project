@@ -2,9 +2,11 @@ const express = require('express');
 const supabaseClient = require('@supabase/supabase-js');
 //Was getting error about CORS looked into and found way around 
 const cors = require('cors');
+const dotenv = require('dotenv');
 
 const app = express();
-const port = 3000;
+const port = 5500;
+dotenv.config();
 
 app.use(cors({
     origin: "http://127.0.0.1:5500",
@@ -14,8 +16,8 @@ app.use(cors({
 
 app.use(express.json());
 
-const supabaseUrl = 'https://pjvlmxinhdbyxvuwpwiv.supabase.co';
-const supabaseKey = 'sb_publishable_butEWiNmZ6knqWHjsvQs3w__eLT_TCw';
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_KEY;
 const supabase = supabaseClient.createClient(supabaseUrl, supabaseKey);
 
 app.get('/favorites', async (req, res) =>{

@@ -1,6 +1,6 @@
 async function loadFavorites() {
 
-    const response = await fetch('http://localhost:3000/favorites');
+    const response = await fetch('/favorites');
 
     const movies = await response.json();
 

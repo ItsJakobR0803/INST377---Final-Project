@@ -1,25 +1,14 @@
 
-//API Key 
-const API_KEY = "3131c90536b9cb0859d9dfab72375f3a";
 
 const params = new URLSearchParams(window.location.search);
 const movieId = params.get("id");
 
 //Fetch details of movie
 async function getMovieDetails() {
-        const [movieRes, creditsRes, releaseRes] = await Promise.all([
-            fetch(`https://api.themoviedb.org/3/movie/${movieId}?api_key=${API_KEY}`),
-            fetch(`https://api.themoviedb.org/3/movie/${movieId}/credits?api_key=${API_KEY}`),
-            fetch(`https://api.themoviedb.org/3/movie/${movieId}/release_dates?api_key=${API_KEY}`)
-        ]);
+    const response = await fetch(`/api/details/${movieId}`);
+    const data = await response.json();
 
-        const movie = await movieRes.json();
-        const credits = await creditsRes.json();
-        const releaseData = await releaseRes.json();
-
-
-        displayMovie(movie, credits);
-
+    displayMovie(data.movie, data.credits);
 }
 
 

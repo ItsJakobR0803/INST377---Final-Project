@@ -1,18 +1,10 @@
 
-//API Key 
-const API_KEY = "3131c90536b9cb0859d9dfab72375f3a";
-
-
 //Fetch Newly Released Movies (Thought these would be best on the home page)
 async function getNewMovies() {
-    const response = await fetch(
-      `https://api.themoviedb.org/3/movie/now_playing?api_key=${API_KEY}`
-    );
-
+    const response = await fetch('/api/movies');
+    
     const data = await response.json();
-
     displayMovies(data.results);
-
 }
 
 
@@ -20,6 +12,7 @@ async function getNewMovies() {
 function displayMovies(movies) {
 
   const moviesContainer =
+
   document.getElementById("moviesContainer");
 
   moviesContainer.innerHTML = "";
@@ -67,25 +60,16 @@ function displayMovies(movies) {
   //Search Movies via user input
 async function searchMovies() {
 
-  const search =
-    document.getElementById("searchInput").value;
+    const search = document.getElementById("searchInput").value; 
 
-  //Fetch movies based on their search input 
-  document.getElementById("searchText").textContent = search;
-    const response = await fetch(
-      `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${search}`
-    );
+    const response = await fetch(`/api/search?q=${search}`); 
 
     const data = await response.json();
-
     displayMovies(data.results);
 }
-
   //Fetch Genres for Genre Dropdown 
 async function getGenres() {
-  const response = await fetch(
-    `https://api.themoviedb.org/3/genre/movie/list?api_key=${API_KEY}`
-  );
+  const response = await fetch('/api/genres');
 
   const data = await response.json();
 
@@ -101,25 +85,18 @@ async function getGenres() {
 
   //Filter the movies by user selected genre
 async function filterByGenre() {
+    const genreId = document.getElementById("genreSelect").value;
 
-    const genreId =
-        document.getElementById("genreSelect").value;
+    let url = "/api/filtered";
 
-    let url = "";
-
-    if (genreId === "") {
-        url = `https://api.themoviedb.org/3/movie/now_playing?api_key=${API_KEY}`;
-    } 
-    
-    else {
-        url = `https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&with_genres=${genreId}`;
+    if (genreId !== "") {
+        url += `?genre=${genreId}`;
     }
 
-      const response = await fetch(url);
+    const response = await fetch(url);
+    const data = await response.json();
 
-      const data = await response.json();
-
-      displayMovies(data.results);
+    displayMovies(data.results);
 }
 
   //Picture Slider for Movies (Gives the app more of a netflix feel)
