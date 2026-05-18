@@ -1,26 +1,88 @@
 const express = require('express');
 const supabaseClient = require('@supabase/supabase-js');
-//Was getting error about CORS looked into and found way around 
-const cors = require('cors');
 const dotenv = require('dotenv');
 
 const app = express();
-const port = 5500;
+const port = 3000;
 dotenv.config();
 
-app.use(cors({
-    origin: "http://127.0.0.1:5500",
-    methods: ["GET", "POST", "OPTIONS"],
-    allowedHeaders: ["Content-Type"]
-}));
-
 app.use(express.json());
+app.use(express.static(__dirname + '/public'));  
 
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_KEY;
 const supabase = supabaseClient.createClient(supabaseUrl, supabaseKey);
 
-app.get('/favorites', async (req, res) =>{
+const API_KEY = process.env.API_KEY
+
+app.get('/', (req, res) => {
+    res.sendFile('public/home.html', { root: __dirname });
+});
+
+app.get('/api/movies', async (req, res) => {
+        const response = await fetch(
+            `https://api.themoviedb.org/3/movie/popular?api_key=${process.env.API_KEY}`
+        );
+
+        const data = await response.json();
+        res.json(data);
+});
+
+app.get('/api/search', async (req, res) => {
+        const query = req.query.q;
+
+        const response = await fetch(
+            `https://api.themoviedb.org/3/search/movie?api_key=${process.env.API_KEY}&query=${query}`
+        );
+
+        const data = await response.json();
+        res.json(data);
+
+});
+
+app.get('/api/genres', async (req, res) => {
+        const response = await fetch(
+            `https://api.themoviedb.org/3/genre/movie/list?api_key=${process.env.API_KEY}`
+        );
+
+        const data = await response.json();
+        res.json(data);
+
+});
+
+app.get('/api/filtered', async (req, res) => {
+        const genreId = req.query.genre;
+
+        let url = "";
+
+        if (!genreId) {
+            url = `https://api.themoviedb.org/3/movie/now_playing?api_key=${process.env.API_KEY}`;
+        } else {
+            url = `https://api.themoviedb.org/3/discover/movie?api_key=${process.env.API_KEY}&with_genres=${genreId}`;
+        }
+
+        const response = await fetch(url);
+        const data = await response.json();
+
+        res.json(data);
+});
+
+app.get('/api/details/:id', async (req, res) => {
+    const movieId = req.params.id;
+        const [movieRes, creditsRes, releaseRes] = await Promise.all([
+            fetch(`https://api.themoviedb.org/3/movie/${movieId}?api_key=${process.env.API_KEY}`),
+            fetch(`https://api.themoviedb.org/3/movie/${movieId}/credits?api_key=${process.env.API_KEY}`),
+            fetch(`https://api.themoviedb.org/3/movie/${movieId}/release_dates?api_key=${process.env.API_KEY}`)
+        ]);
+
+        const movie = await movieRes.json();
+        const credits = await creditsRes.json();
+        const releaseData = await releaseRes.json();
+
+        res.json({ movie, credits, releaseData });
+    });
+
+app.get('/favorites', async (req, res) => {
     console.log('Attempting to get all favorite movies');
 
     const { data, error } = await supabase.from('favorites').select();
@@ -55,7 +117,7 @@ app.post('/favorite', async(req, res) =>{
                 movie_id,
                 title,
                 release_date,
-                rating_avg: movie.vote_average,
+                rating_avg,
                 overview,
                 poster_path
             }
@@ -73,6 +135,6 @@ app.post('/favorite', async(req, res) =>{
 });
 
 
-app.listen(port, () =>{
-    console.log(`App is available on port: ${port}`)
+app.listen(port, () => {
+    console.log(`Running on http://localhost:${port}`);
 });
