@@ -104,9 +104,8 @@ Request Body
 Returns inserted database entry.
 
 # Known Bugs
-Duplicate favorite movies can currently be added.
+Duplicate favorite movies alerts they are be added even if they are already in favorites
 No DELETE endpoint exists for removing favorites.
-Error handling is minimal for failed API requests.
 Search results may occasionally return incomplete movie data from TMDb.
 No authentication system is implemented.
 
